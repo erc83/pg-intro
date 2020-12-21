@@ -30,6 +30,23 @@ const server = http.createServer((req,res)=>{
             })
         })
     }
+    if(req.url.startsWith('/users/') && req.method == 'PUT') {
+        let data 
+        const userId = url.parse(req.url).pathname.split('/')[2]  
+        req.on('data', (payload) => {
+            data = JSON.parse(payload)
+            db.query('update users set name = $1, lastname = $2 where id = $3 RETURNING *',[data.name, data.lastName, userId], (err, results)=>{
+                res.writeHead(200,{'Content-Type':'application/json'})
+                res.end(JSON.stringify(results.rows))
+            })
+        })
+    }
+
+
+
+
+
+
 })
 
 server.listen(9292, ()=>{console.log('escuchando puerto 9292')})
